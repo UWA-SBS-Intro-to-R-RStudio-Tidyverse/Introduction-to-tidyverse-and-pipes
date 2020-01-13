@@ -1,0 +1,143 @@
+---
+title: "BIOL4408MarineEcology"
+author: "TimLanglois"
+date: "01/01/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+# Using pipes and tidyverse
+
+Things to do:
+General intro to R
+Intro to RStudio
+Intro to Projects
+
+
+## Pipes (%>%) in R
+
+R is a functional language, which means that your code often contains a lot of parenthesis, ( and ). When you have complex code, this often will mean that you will have to nest those parentheses together. This makes your R code hard to read and understand.
+
+The purpose of pipes (%>%) is to simplify the notation for the application of several functions to a single data object.
+
+
+
+## Nested approach without pipes:
+
+pizza <- take_out(put_in(dress_with(dress_with(dress_with(pie, sauce), oil), break(cheese), oven), oven)
+
+
+## Multiple object approach without pipes:
+
+pie_tmp1 <- dress_with(pie, sauce)
+
+pie_tmp2 <- dress_with(pie_tmp2, oil)
+
+pie_tmp3 <- dress_with(pie_tmp3, break(cheese))
+
+pie_tmp4 <- put_in(pie_tmp4, oven)
+
+pizza <- take_out(pie_tmp, oven)
+
+
+## Making a pizza with pipes
+
+pizza <- pie %>%
+
+  dress_with(sauce) %>%
+  
+  dress_with(oil) %>%
+  
+  dress_with(break(cheese)) %>%
+  
+  put_in(oven) %>%
+  
+  take_out(oven)
+
+
+And the pizza is done. Compare to previous
+ 
+
+## Now for some worked examples
+
+You can copy and paste these commands into R.
+
+We are going to load the tidyr() and dplyr() package and the glimpse() a pre-loaded dataset.
+
+
+```{r dplyr, message=FALSE, warning=FALSE}
+library(tidyr)
+library(dplyr)
+
+glimpse(iris)
+```
+
+
+This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica.
+
+This example dataset is handy for demonstrating functions.
+
+
+Let's make an example data summary using pipes and the try to read it out loud!
+
+###Summary using pipes
+
+"you take the Iris data, 
+ filter for petals longer than 1 cm,
+ for each species, then calcualte the mean sepal length,
+ then arrange in descending order"
+
+```{r iris pipe, message=FALSE, warning=FALSE}
+iris %>%
+  filter(Petal.Length > 1) %>%
+  group_by(Species) %>%
+  summarise(Avg_Sepal.Length = mean(Sepal.Length)) %>%
+  arrange(desc(Avg_Sepal.Length))%>%
+  glimpse()
+```
+
+
+### This is a nested version, could you read that out loud?
+
+```{r iris nested, message=FALSE, warning=FALSE}
+arrange(
+  summarize(
+    group_by(
+      filter(iris, Petal.Length > 1),
+      Species
+    ),
+    Avg_Sepal.Length = mean(Sepal.Length)
+  ),
+  desc(Avg_Sepal.Length)
+)
+```
+
+
+### Here is an intermidiate object version, this would also be hard to read out loud
+
+```{r iris object, message=FALSE, warning=FALSE}
+a <- filter(iris, Petal.Length > 1)
+b <- group_by(a, Species)
+c <- summarise(b, Avg_Sepal.Length = mean(Sepal.Length))
+d <- arrange(c, desc(Avg_Sepal.Length))
+print(d)
+```
+
+
+OK now lets, make one plot, then look at some marine data.
+
+```{r plot, message=FALSE, warning=FALSE}
+library(ggplot2)
+
+ggplot(iris, aes(x=Species, y=Petal.Length))+
+  geom_boxplot()
+
+```
+
